@@ -1,0 +1,62 @@
+# Binaries
+/bin/
+/build/
+/dist/
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Coverage reports
+*.coverprofile
+coverage.out
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Environment files
+.env
+.env.*
+
+# IDE files
+.idea/
+.vscode/
+
+# JetBrains
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+
+# Air live reload
+tmp/
+
+# Delve debugger
+__debug_bin
+
+# Local configuration files
+config.local.json
+config.dev.json
+
+# Generated files
+generated/
+
+# Runtime data for your project
+data/
+jobs.json
+metrics.json
