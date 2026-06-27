@@ -1,14 +1,8 @@
 package main
 
-import (
-	api "concurrent-job-processing-system/internal/api/routes"
-	"fmt"
-	"log"
-)
+import "concurrent-job-processing-system/internal/api"
 
 func main() {
-	server := api.InitializeAPI()
-
-	fmt.Println("Server running on port 8000")
-	log.Fatal(server.ListenAndServe())
+	server := api.New()
+	server.Run()
 }
