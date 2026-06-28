@@ -1,13 +1,10 @@
 package routes
 
 import (
-	"log"
+	"concurrent-job-processing-system/internal/api/handlers"
 	"net/http"
 )
 
-func HandleHealthRoute(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("System up and working...."))
-	if err != nil {
-		log.Println("Error writing to route: ", err)
-	}
+func RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/health", handlers.HealthHandler)
 }

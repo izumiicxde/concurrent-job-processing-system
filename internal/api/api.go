@@ -2,6 +2,7 @@ package api
 
 import (
 	"concurrent-job-processing-system/internal/api/routes"
+	"concurrent-job-processing-system/internal/logger"
 	"context"
 	"errors"
 	"fmt"
@@ -17,14 +18,15 @@ const PORT = "8000"
 
 type API struct {
 	server *http.Server
+	logger *logger.Logger
 }
 
-func New() *API {
+func New(log *logger.Logger) *API {
 
-	api := &API{}
+	api := &API{logger: log}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", routes.HandleHealthRoute)
+	routes.RegisterRoutes(mux)
 
 	api.server = &http.Server{
 		Addr:         ":" + PORT,
@@ -60,5 +62,4 @@ func (api *API) Run() {
 	}
 
 	fmt.Println("Server shutdown gracefully..")
-
 }
