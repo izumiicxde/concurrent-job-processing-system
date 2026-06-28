@@ -16,10 +16,7 @@ func main() {
 	cfg := config.Load()
 
 	log := logger.New(cfg)
-	server := api.New(log)
+	server := api.New(cfg, log)
 	server.Run()
 
-	if err := log.Close(); err != nil {
-		panic(err)
-	}
 }

@@ -1,12 +1,14 @@
 package logger
 
 import (
-	"concurrent-job-processing-system/internal/config"
+	"fmt"
 	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
+
+	"concurrent-job-processing-system/internal/config"
 )
 
 type Logger struct {
@@ -16,12 +18,12 @@ type Logger struct {
 
 func New(cfg *config.Config) *Logger {
 	// create the log folder
-	if err := os.MkdirAll(filepath.Dir(cfg.LogPath), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(cfg.LogPath), 0o755); err != nil {
 		panic(err)
 	}
 
 	// open or create log file.
-	file, err := os.OpenFile(cfg.LogPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	file, err := os.OpenFile(cfg.LogPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o644)
 	if err != nil {
 		panic(err)
 	}
@@ -40,6 +42,8 @@ func (logger *Logger) HTTPError(method string, path string, status int, remoteIP
 	logger.Error("HTTP REQUEST ERROR", "component", "http", "method", method, "path", path, "status", status, "remoteIP", remoteIP, "error", err)
 }
 
-func (logger *Logger) Close() error {
-	return logger.file.Close()
+func (logger *Logger) Close() {
+	if err := logger.file.Close(); err != nil {
+		fmt.Println("Failed to close the log file, Error:", err)
+	}
 }

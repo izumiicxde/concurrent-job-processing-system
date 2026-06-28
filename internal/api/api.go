@@ -1,35 +1,33 @@
 package api
 
 import (
-	"concurrent-job-processing-system/internal/api/routes"
-	"concurrent-job-processing-system/internal/logger"
 	"context"
 	"errors"
-	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-)
 
-const PORT = "8000"
+	"concurrent-job-processing-system/internal/api/routes"
+	"concurrent-job-processing-system/internal/config"
+	"concurrent-job-processing-system/internal/logger"
+)
 
 type API struct {
 	server *http.Server
 	logger *logger.Logger
+	cfg    *config.Config
 }
 
-func New(log *logger.Logger) *API {
-
-	api := &API{logger: log}
+func New(cfg *config.Config, log *logger.Logger) *API {
+	api := &API{logger: log, cfg: cfg}
 
 	mux := http.NewServeMux()
 	routes.RegisterRoutes(mux)
 
 	api.server = &http.Server{
-		Addr:         ":" + PORT,
+		Addr:         ":" + cfg.Port,
 		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -38,12 +36,11 @@ func New(log *logger.Logger) *API {
 }
 
 func (api *API) Run() {
-
 	go func() {
-		fmt.Println("Server running on port: ", PORT)
+		api.logger.Info("Server Started", "port", api.cfg.Port)
 		err := api.server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fmt.Println("Server Error: ", err)
+			api.logger.Error("Server Error: ", "error", err)
 		}
 	}()
 
@@ -51,15 +48,16 @@ func (api *API) Run() {
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	<-signalChan
 
-	fmt.Println("Shutdown Signal Received")
+	api.logger.Info("Server shutdown Signal Received")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	signal.Stop(signalChan)
 	err := api.server.Shutdown(ctx)
 	if err != nil {
-		log.Fatal("Shutdown error", err)
+		api.logger.Error("Error while shutting down server", "error", err)
 	}
 
-	fmt.Println("Server shutdown gracefully..")
+	api.logger.Info("Server shutdown gracefully")
+	api.logger.Close()
 }
