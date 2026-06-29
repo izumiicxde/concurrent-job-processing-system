@@ -35,7 +35,7 @@ func New(cfg *config.Config) *Logger {
 }
 
 func (logger *Logger) HTTPRequest(method string, path string, status int, duration time.Duration, remoteIP string) {
-	logger.Info("HTTP REQUEST COMPLETED", "component", "http", "method", method, "path", path, "status", status, "duration_ms", duration.Milliseconds(), "remoteIP", remoteIP)
+	logger.Info("HTTP REQUEST COMPLETED", "component", "http", "method", method, "path", path, "status", status, "duration", duration, "remoteIP", remoteIP)
 }
 
 func (logger *Logger) HTTPError(method string, path string, status int, remoteIP string, err error) {
