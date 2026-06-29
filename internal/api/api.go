@@ -1,6 +1,8 @@
 package api
 
 import (
+	"concurrent-job-processing-system/internal/api/handlers"
+	"concurrent-job-processing-system/internal/api/middlewares"
 	"context"
 	"errors"
 	"net/http"
@@ -24,11 +26,12 @@ func New(cfg *config.Config, log *logger.Logger) *API {
 	api := &API{logger: log, cfg: cfg}
 
 	mux := http.NewServeMux()
-	routes.RegisterRoutes(mux)
+	handler := handlers.New(log)
+	routes.RegisterRoutes(mux, handler)
 
 	api.server = &http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      mux,
+		Handler:      middlewares.Logging(log)(mux),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}

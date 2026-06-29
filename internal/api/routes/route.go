@@ -5,6 +5,6 @@ import (
 	"net/http"
 )
 
-func RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/health", handlers.HealthHandler)
+func RegisterRoutes(mux *http.ServeMux, handlers *handlers.Handler) {
+	mux.HandleFunc("/health", handlers.Health)
 }

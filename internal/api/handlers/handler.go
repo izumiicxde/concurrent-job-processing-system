@@ -1,18 +1,21 @@
 package handlers
 
 import (
+	"concurrent-job-processing-system/internal/logger"
 	"log"
-	"log/slog"
 	"net/http"
 )
 
 type Handler struct {
-	logger *slog.Logger
+	logger *logger.Logger
+}
+
+func New(logger *logger.Logger) *Handler {
+	return &Handler{logger: logger}
 }
 
 func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		h.logger.Info("")
 		_, err := w.Write([]byte("System Up and Running on port 8000"))
 		if err != nil {
 			log.Println("ERROR: GET /health route failed. ", err)
