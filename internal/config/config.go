@@ -14,7 +14,7 @@ type Config struct {
 
 func Load() *Config {
 	var config Config
-	err := env.Parse(config)
+	err := env.Parse(&config)
 	if err != nil {
 		log.Fatal("Error loading .env file: ", err)
 	}
