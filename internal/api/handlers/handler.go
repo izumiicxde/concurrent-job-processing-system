@@ -22,3 +22,25 @@ func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+//  JOB HANDLERS
+
+// GetJobs : Get all jobs.
+func (h *Handler) GetJobs(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// GetJob : Get a single job by ID
+func (h *Handler) GetJob(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// CreateJob : Create a new Job
+func (h *Handler) CreateJob(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// DeleteJob : Delete a job by ID
+func (h *Handler) DeleteJob(w http.ResponseWriter, r *http.Request) {
+
+}
