@@ -26,13 +26,21 @@ const (
 	JobPriorityCritical JobPriority = "critical"
 
 	// Types
-	JobTypeSleep   JobType = "sleep"
-	JobTypeWebhook JobType = "webhook"
-	JobTypeFile    JobType = "file"
-	JobTypeReport  JobType = "report"
-	JobTypeEmail   JobType = "email"
-	JobTypeCleanup JobType = "cleanup"
-	JobTypeBackup  JobType = "backup"
+	JobTypeSleep JobType = "sleep"
+
+	JobTypeSendEmail        JobType = "send_email"
+	JobTypeSendNotification JobType = "send_notification"
+
+	JobTypeGenerateThumbnail JobType = "generate_thumbnail"
+	JobTypeResizeImage       JobType = "resize_image"
+	JobTypeCompressFiles     JobType = "compress_files"
+
+	JobTypeSearchText      JobType = "search_text"
+	JobTypeBackupDirectory JobType = "backup_directory"
+	JobTypeExportUserData  JobType = "export_user_data"
+
+	JobTypeCleanupStorage  JobType = "cleanup_storage"
+	JobTypeGenerateInvoice JobType = "generate_invoice"
 )
 
 type Job struct {
