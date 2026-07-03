@@ -16,7 +16,7 @@ type Worker struct {
 	Executor *executor.Registry
 }
 
-func New(id int, queue queue.JobQueue, store store.JobStore, executor *executor.Registry) *Worker {
+func NewWorker(id int, queue queue.JobQueue, store store.JobStore, executor *executor.Registry) *Worker {
 	return &Worker{
 		ID:       id,
 		Queue:    queue,
