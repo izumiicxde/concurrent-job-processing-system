@@ -3,6 +3,7 @@ package store
 import (
 	"concurrent-job-processing-system/internal/jobs"
 	"sync"
+	"time"
 )
 
 type MemoryStore struct {
@@ -35,6 +36,7 @@ func (ms *MemoryStore) Create(job *jobs.Job) error {
 	if exists {
 		return jobs.ErrJobAlreadyExists
 	}
+	job.CreatedAt = time.Now()
 	ms.jobs[job.ID] = job
 	return nil
 }
@@ -57,6 +59,8 @@ func (ms *MemoryStore) List() ([]*jobs.Job, error) {
 func (ms *MemoryStore) Update(job *jobs.Job) error {
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
+
+	job.UpdatedAt = time.Now()
 	_, exists := ms.jobs[job.ID]
 	if !exists {
 		return jobs.ErrJobNotFound
