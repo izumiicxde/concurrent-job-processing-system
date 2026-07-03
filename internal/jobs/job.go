@@ -1,6 +1,9 @@
 package jobs
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type JobType string
 type JobStatus string
@@ -43,6 +46,10 @@ const (
 	JobTypeGenerateInvoice JobType = "generate_invoice"
 )
 
+var (
+	ErrMaxRetiresExhausted = errors.New("maximum retires reached")
+)
+
 type Job struct {
 	ID   string
 	Type JobType
@@ -51,10 +58,11 @@ type Job struct {
 	Status   JobStatus
 	Priority JobPriority
 
-	Retires    int
-	MaxRetires int
+	Retries    int
+	MaxRetries int
 
 	CreatedAt  time.Time
+	StartedAt  time.Time
 	UpdatedAt  time.Time
 	FinishedAt time.Time
 
