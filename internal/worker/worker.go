@@ -40,17 +40,18 @@ func (w *Worker) Start() {
 
 		jobExecutor, err := w.Executor.Get(job.Type)
 
-		if errors.Is(err, executor.ErrExecutorNotFound) {
+		if err != nil {
 			job.Status = jobs.JobStatusFailed
 			job.FinishedAt = time.Now()
 			job.Error = err.Error()
 			_ = w.Store.Update(job)
 			continue
 		}
-		for {
-			job.Status = jobs.JobStatusRunning
 
+		for {
 			if job.Retries <= job.MaxRetries {
+				job.Status = jobs.JobStatusRunning
+
 				if err := jobExecutor.Execute(job); err != nil {
 					job.Error = err.Error()
 					job.Retries++
@@ -66,7 +67,6 @@ func (w *Worker) Start() {
 			} else {
 				job.Status = jobs.JobStatusFailed
 				job.FinishedAt = time.Now()
-				job.Error = jobs.ErrMaxRetiresExhausted.Error()
 				_ = w.Store.Update(job)
 				break
 			}
