@@ -3,6 +3,9 @@ package api
 import (
 	"concurrent-job-processing-system/internal/api/handlers"
 	"concurrent-job-processing-system/internal/api/middlewares"
+	"concurrent-job-processing-system/internal/executor"
+	"concurrent-job-processing-system/internal/queue"
+	"concurrent-job-processing-system/internal/store"
 	"context"
 	"errors"
 	"net/http"
@@ -22,11 +25,11 @@ type API struct {
 	cfg    *config.Config
 }
 
-func New(cfg *config.Config, log *logger.Logger) *API {
+func New(cfg *config.Config, log *logger.Logger, queue queue.JobQueue, store store.JobStore, executor *executor.Registry) *API {
 	api := &API{logger: log, cfg: cfg}
 
 	mux := http.NewServeMux()
-	handler := handlers.New(log)
+	handler := handlers.New(log, queue, store, executor)
 	routes.RegisterRoutes(mux, handler)
 
 	api.server = &http.Server{
