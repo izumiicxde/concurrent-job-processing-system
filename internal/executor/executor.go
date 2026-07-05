@@ -2,8 +2,8 @@ package executor
 
 import (
 	"concurrent-job-processing-system/internal/jobs"
+	"concurrent-job-processing-system/internal/logger"
 	"errors"
-	"log"
 	"time"
 )
 
@@ -44,76 +44,140 @@ func (r *Registry) mustRegister(jobType jobs.JobType, executor Executor) {
 	}
 }
 
-func New() *Registry {
+func New(logger *logger.Logger) *Registry {
 	registry := &Registry{
 		executors: make(map[jobs.JobType]Executor),
 	}
 
-	registry.mustRegister(jobs.JobTypeSendEmail, &EmailExecutor{})
-	registry.mustRegister(jobs.JobTypeSendNotification, &NotificationExecutor{})
-	registry.mustRegister(jobs.JobTypeGenerateThumbnail, &ThumbnailExecutor{})
-	registry.mustRegister(jobs.JobTypeCompressFiles, &CompressFilesExecutor{})
-	registry.mustRegister(jobs.JobTypeExportUserData, &ExportUserDataExecutor{})
+	registry.mustRegister(
+		jobs.JobTypeSendEmail,
+		&EmailExecutor{logger: logger},
+	)
+
+	registry.mustRegister(
+		jobs.JobTypeSendNotification,
+		&NotificationExecutor{logger: logger},
+	)
+
+	registry.mustRegister(
+		jobs.JobTypeGenerateThumbnail,
+		&ThumbnailExecutor{logger: logger},
+	)
+
+	registry.mustRegister(
+		jobs.JobTypeCompressFiles,
+		&CompressFilesExecutor{logger: logger},
+	)
+
+	registry.mustRegister(
+		jobs.JobTypeExportUserData,
+		&ExportUserDataExecutor{logger: logger},
+	)
 
 	return registry
 }
 
-type EmailExecutor struct{}
+type EmailExecutor struct {
+	logger *logger.Logger
+}
 
 func (ex *EmailExecutor) Execute(job *jobs.Job) error {
-	log.Printf("[EMAIL] Processing job=%s", job.ID)
+	ex.logger.Info(
+		"Executing email job",
+		"job_id", job.ID,
+		"job_type", job.Type,
+	)
 
 	time.Sleep(2 * time.Second)
 
-	log.Printf("[EMAIL] Email sent successfully for job=%s", job.ID)
+	ex.logger.Info(
+		"Email job completed",
+		"job_id", job.ID,
+	)
 
 	return nil
 }
 
-type NotificationExecutor struct{}
+type NotificationExecutor struct {
+	logger *logger.Logger
+}
 
 func (ex *NotificationExecutor) Execute(job *jobs.Job) error {
-	log.Printf("[NOTIFICATION] Processing job=%s", job.ID)
+	ex.logger.Info(
+		"Executing notification job",
+		"job_id", job.ID,
+		"job_type", job.Type,
+	)
 
 	time.Sleep(500 * time.Millisecond)
 
-	log.Printf("[NOTIFICATION] Notification sent successfully for job=%s", job.ID)
+	ex.logger.Info(
+		"Notification job completed",
+		"job_id", job.ID,
+	)
 
 	return nil
 }
 
-type ThumbnailExecutor struct{}
+type ThumbnailExecutor struct {
+	logger *logger.Logger
+}
 
 func (ex *ThumbnailExecutor) Execute(job *jobs.Job) error {
-	log.Printf("[THUMBNAIL] Processing job=%s", job.ID)
+	ex.logger.Info(
+		"Executing thumbnail generation job",
+		"job_id", job.ID,
+		"job_type", job.Type,
+	)
 
 	time.Sleep(3 * time.Second)
 
-	log.Printf("[THUMBNAIL] Thumbnail generated for job=%s", job.ID)
+	ex.logger.Info(
+		"Thumbnail generated successfully",
+		"job_id", job.ID,
+	)
 
 	return nil
 }
 
-type CompressFilesExecutor struct{}
+type CompressFilesExecutor struct {
+	logger *logger.Logger
+}
 
 func (ex *CompressFilesExecutor) Execute(job *jobs.Job) error {
-	log.Printf("[ZIP] Processing job=%s", job.ID)
+	ex.logger.Info(
+		"Executing file compression job",
+		"job_id", job.ID,
+		"job_type", job.Type,
+	)
 
 	time.Sleep(4 * time.Second)
 
-	log.Printf("[ZIP] Archive created successfully for job=%s", job.ID)
+	ex.logger.Info(
+		"Files compressed successfully",
+		"job_id", job.ID,
+	)
 
 	return nil
 }
 
-type ExportUserDataExecutor struct{}
+type ExportUserDataExecutor struct {
+	logger *logger.Logger
+}
 
 func (ex *ExportUserDataExecutor) Execute(job *jobs.Job) error {
-	log.Printf("[EXPORT] Processing job=%s", job.ID)
+	ex.logger.Info(
+		"Executing user data export job",
+		"job_id", job.ID,
+		"job_type", job.Type,
+	)
 
 	time.Sleep(2 * time.Second)
 
-	log.Printf("[EXPORT] User data exported successfully for job=%s", job.ID)
+	ex.logger.Info(
+		"User data exported successfully",
+		"job_id", job.ID,
+	)
 
 	return nil
 }
