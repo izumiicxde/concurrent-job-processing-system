@@ -61,3 +61,4 @@ generated/
 data/
 jobs.json
 metrics.json
+*.sh
