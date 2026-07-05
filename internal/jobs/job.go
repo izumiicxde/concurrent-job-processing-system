@@ -1,6 +1,7 @@
 package jobs
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 )
@@ -8,9 +9,6 @@ import (
 type JobType string
 type JobStatus string
 type JobPriority string
-
-type Payload struct {
-}
 
 const (
 	// Status
@@ -50,21 +48,28 @@ var (
 	ErrMaxRetiresExhausted = errors.New("maximum retires reached")
 )
 
+type CreateJobRequest struct {
+	Type       JobType         `json:"type"`
+	Payload    json.RawMessage `json:"payload"`
+	Priority   JobPriority     `json:"priority"`
+	MaxRetries int             `json:"max_retries"`
+}
+
 type Job struct {
-	ID   string
-	Type JobType
-	Payload
+	ID      string          `json:"id"`
+	Type    JobType         `json:"type"`
+	Payload json.RawMessage `json:"payload"`
 
-	Status   JobStatus
-	Priority JobPriority
+	Status   JobStatus   `json:"status"`
+	Priority JobPriority `json:"priority"`
 
-	Retries    int
-	MaxRetries int
+	Retries    int `json:"retries"`
+	MaxRetries int `json:"max_retries"`
 
-	CreatedAt  time.Time
-	StartedAt  time.Time
-	UpdatedAt  time.Time
-	FinishedAt time.Time
+	CreatedAt  time.Time `json:"created_at"`
+	StartedAt  time.Time `json:"started_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	FinishedAt time.Time `json:"finished_at"`
 
-	Error string
+	Error string `json:"error"`
 }
