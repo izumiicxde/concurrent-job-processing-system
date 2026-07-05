@@ -5,7 +5,10 @@ import (
 	"concurrent-job-processing-system/internal/logger"
 	"concurrent-job-processing-system/internal/queue"
 	"concurrent-job-processing-system/internal/store"
+	"context"
+	"errors"
 	"sync"
+	"time"
 )
 
 type WorkerPool struct {
@@ -40,12 +43,27 @@ func (wp *WorkerPool) Start() {
 		}(worker)
 	}
 }
-func (wp *WorkerPool) Shutdown() {
+func (wp *WorkerPool) Shutdown(ctx context.Context) error {
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	done := make(chan struct{})
 	wp.logger.Info("Worker pool shutdown initiated", "worker_count", len(wp.workers))
 	wp.logger.Info("Closing job queue")
 	wp.queue.Close()
 
 	wp.logger.Info("Waiting for all workers to finish and exit")
-	wp.wg.Wait()
+	go func() {
+		wp.wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		wp.logger.Info("All workers exited.")
+	case <-ctxWithTimeout.Done():
+		wp.logger.Warn("Worker shutdown timeout exceeded. Forcing process termination")
+		return errors.New("worker shutdown timeout exceeded. Forcing process termination")
+	}
 	wp.logger.Info("Worker pool shutdown complete")
+	return nil
 }
