@@ -108,15 +108,29 @@ func (h *Handler) CreateJob(w http.ResponseWriter, r *http.Request) {
 
 // DeleteJob : Delete a job by ID
 func (h *Handler) DeleteJob(w http.ResponseWriter, r *http.Request) {
+	var job *jobs.Job
 	id := r.PathValue("id")
 	if id == "" {
 		h.WriteError(w, http.StatusBadRequest, INVALID_JOB_ID, "Provide a valid job ID")
 		return
 	}
-
-	if err := h.store.Delete(id); err != nil {
+	job, err := h.store.Get(id)
+	if err != nil {
 		if errors.Is(err, jobs.ErrJobNotFound) {
 			h.WriteError(w, http.StatusBadRequest, JOB_NOT_FOUND, err.Error())
+			return
+		}
+		h.WriteError(w, http.StatusInternalServerError, JOB_FETCH_FAILED, err.Error())
+		return
+	}
+
+	if job.Status != jobs.JobStatusPending && job.Status != jobs.JobStatusFailed && job.Status != jobs.JobStatusCancelled && job.Status != jobs.JobStatusCompleted {
+		h.WriteError(w, http.StatusBadRequest, JOB_DELETION_FAILED, "Job cannot be deleted while queued, running, or retrying")
+		return
+	}
+	if err := h.store.Delete(id); err != nil {
+		if errors.Is(err, jobs.ErrJobNotFound) {
+			h.WriteError(w, http.StatusNotFound, JOB_NOT_FOUND, err.Error())
 			return
 		}
 		h.WriteError(w, http.StatusInternalServerError, JOB_DELETION_FAILED, "Failed to delete the Job")
