@@ -1,6 +1,6 @@
 # Concurrent Job Processing System
 
-A production-inspired concurrent job processing system built in Go, designed to explore core backend and systems engineering concepts such as worker pools, queues, retries, graceful shutdown, dependency injection, and background job execution.
+A production-inspired concurrent job processing system built in Go, designed to explore core backend and systems engineering concepts such as worker pools, queues, retries, graceful shutdown, dependency injection, and background job execution. **This project does not use any external library or packages, except for .env and live reload**
 
 ## Features
 
